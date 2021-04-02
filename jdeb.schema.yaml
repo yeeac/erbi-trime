@@ -1,0 +1,114 @@
+# Rime schema
+# encoding: utf-8
+
+schema:
+  schema_id: jdeb
+  name: 极点二笔
+  version: "7.15"
+  author:
+    - 一一
+    - Helios <zengyee@gmail.com>
+  description: |
+    极点二笔的码表来自：来自极点二笔v7.15
+switches:
+  - name: _hide_candidate
+    reset: 1
+  - name: ascii_mode
+    reset: 0
+    states: [ 中文, 英文 ]
+  - name: full_shape
+    states: [ 半角, 全角 ]
+  - name: ascii_punct
+    states: [ 。，, ．， ]
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - echo_translator
+    - punct_translator
+    - table_translator
+
+speller:
+  alphabet: 'abcdefghijklmnopqrstuvwxyz;,./'
+  initials: 'abcdefghijklmnopqrstuvwxyz'
+  auto_select: true
+  auto_select_pattern: "^.{4,5}$|^.{2}$"
+  max_code_length: 4
+  auto_select: true
+  auto_select_unique_candidate: true
+
+translator:
+  dictionary: jdeb
+  prism: jdeb
+  enable_charset_filter: true
+  enable_sentence: false
+  enable_encoder: true
+  encode_commit_history: true
+  max_phrase_length: 4
+  enable_user_dict: false
+
+
+punctuator:
+  full_shape:
+    ',' : { commit: ， }
+    '.' : { commit: 。 }
+    ';' : { commit: ； }
+    ':' : { commit: ： }
+    '!' : { commit: ！ }
+    '?' : { commit: ？ }
+    "'" : { pair: [ ‘, ’ ] }
+    '"' : { pair: [ “, ” ] }
+    ' ' : { commit: '　' }    
+    '*' : [ ＊, × ]
+    '/' : [ 、, ÷ ]
+    '<' : [ 《, 〈, «, ‹, 〔 ]
+    '>' : [ 》, 〉, », ›,  〕]
+    '(' : { commit: （ }
+    ')' : { commit: ） }
+  half_shape:
+    ',' : { commit: ， }
+    '.' : { commit: 。 }
+    '/' : { commit: 、 }
+    ';' : { commit: ； }
+    ':' : { commit: ： }
+    '!' : { commit: ！ }
+    '?' : { commit: ？ }
+    '<' : { commit: 《 }
+    '>' : { commit: 》 }
+    '(' : { commit: （ }
+    ')' : { commit: ） }
+    "'" : { pair: [ ‘, ’ ] }
+    '"' : { pair: [ “, ” ] }
+    '[' : { commit: 【 }
+    ']' : { commit: 】 }
+    '-' : { commit: －}
+
+key_binder:
+    bindings:
+    - {accept: ISO_Left_Tab, send: Page_Up, when: composing}
+    - {accept: "Shift+Tab", send: Page_Up, when: composing}
+    - {accept: Tab, send: Page_Down, when: composing}
+    - {accept: minus, send: Page_Up, when: has_menu}
+    - {accept: equal, send: Page_Down, when: has_menu}
+    - {accept: "Shift+space", toggle: full_shape, when: always}
+    - {accept: "Control+period", toggle: ascii_punct, when: always}
+
+recognizer:
+  import_preset: default
+  patterns:
+    punct: '^/([0-9]0?|[A-Za-z]+)$'
+    reverse_lookup: "`[a-z]*'?$"
